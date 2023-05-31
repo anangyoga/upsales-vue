@@ -1,16 +1,13 @@
 <script setup lang="ts">
-import HomeNavbar from '@/components/HomeNavbar.vue'
-import HomePartners from '@/components/HomePartners.vue'
-import HomeFeatures from '@/components/HomeFeatures.vue'
-import HomeBusiness from '@/components/HomeBusiness.vue'
+import HomeBusiness from '@/components/Home/HomeBusiness.vue'
+import HomeFeaturesVue from '@/components/Home/HomeFeatures.vue'
+import HomeHeader from '@/components/Home/HomeHeader.vue'
+import HomePartnersVue from '@/components/Home/HomePartners.vue'
 </script>
 
 <template>
-  <HomeNavbar />
-
-  <HomePartners />
-
-  <HomeFeatures />
-
+  <HomeHeader />
+  <HomePartnersVue />
+  <HomeFeaturesVue />
   <HomeBusiness />
 </template>
