@@ -29,7 +29,7 @@ import HomeNavbar from '../Layout/HomeNavbar.vue'
         </li>
       </ul>
       <div class="flex gap-4 md:flex-row flex-col justify-center w-full mb-[60px]">
-        <a href="auth/sign-up.html" class="btn-primary">Get Started</a>
+        <RouterLink :to="{ name: 'signup' }" class="btn-primary">Get Started</RouterLink>
         <a href="#" class="btn-white">Ask Demo</a>
       </div>
 
