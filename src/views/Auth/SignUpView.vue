@@ -1,6 +1,46 @@
 <script setup lang="ts">
 import HomeNavbar from '@/components/Layout/HomeNavbar.vue'
 import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
+import { useUserStore } from '@/stores/user'
+import { useCategoryStore } from '@/stores/category'
+import type Register from '@/types/register'
+import { useRouter } from 'vue-router'
+
+const API_URL = import.meta.env.VITE_API_URL as string
+const userStore = useUserStore()
+const categoryStore = useCategoryStore()
+const router = useRouter()
+
+onMounted(async () => {
+  categoryStore.fetchCategories()
+})
+
+const form = ref<Register>({
+  name: '',
+  email: '',
+  password: '',
+  category_id: null
+})
+
+const register = async (): Promise<void> => {
+  try {
+    // send req to API
+    const { data } = await axios.post(API_URL + '/register', form.value)
+
+    // save token to localStorage
+    localStorage.setItem('access_token', data.result.access_token)
+
+    // fetch user data
+    await userStore.fetchUser()
+
+    // redirect to add product page
+    router.push({ name: 'products-add' })
+  } catch (error) {
+    console.log(error)
+  }
+}
 </script>
 
 <template>
@@ -11,7 +51,9 @@ import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
         <SignUpHeaderVue />
 
         <form
+          @submit.prevent="register"
           action=""
+          method="POST"
           class="bg-white rounded-[30px] p-6 md:max-w-[435px] mx-auto w-full flex flex-col shadow-sm"
         >
           <p class="text-dark font-bold text-[26px] mb-5">Sign Up</p>
@@ -22,7 +64,8 @@ import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
               <label for="" class="text-base font-medium text-dark"> Company name </label>
               <input
                 type="text"
-                name="company"
+                name="name"
+                v-model="form.name"
                 placeholder="Write your company name"
                 class="px-5 py-4 text-base bg-transparent border-2 rounded-full outline-none border-borderLight focus:border-primary placeholder:text-placeholderText text-dark"
                 required
@@ -35,9 +78,9 @@ import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
               <input
                 type="email"
                 name="email"
+                v-model="form.email"
                 placeholder="Write your email"
-                class="bg-transparent px-5 py-4 text-base border-2 rounded-full outline-none border-borderLight focus:border-primary placeholder:text-placeholderText text-dark !border-danger !text-danger placeholder:font-normal font-medium"
-                value="mucho@shayna"
+                class="bg-transparent px-5 py-4 text-base border-2 rounded-full outline-none border-borderLight focus:border-primary placeholder:text-placeholderText text-dark placeholder:font-normal font-medium"
                 required
               />
             </div>
@@ -47,6 +90,7 @@ import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
               <input
                 type="password"
                 name="password"
+                v-model="form.password"
                 placeholder="Secure your strong password"
                 class="px-5 py-4 text-base bg-transparent border-2 rounded-full outline-none border-borderLight focus:border-primary placeholder:text-placeholderText text-dark"
                 required
@@ -57,18 +101,22 @@ import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
               <label for="" class="text-base font-medium text-dark"> Category </label>
               <select
                 name="category"
+                v-model="form.category_id"
                 class="bg-transparent px-5 py-4 text-base border-2 rounded-full outline-none appearance-none border-borderLight focus:border-primary placeholder:text-placeholderText bg-[url('/public/assets/svg/ic-chevron-down.svg')] bg-[calc(100%-20px)_center] bg-no-repeat invalid:required:text-placeholderText"
                 required
               >
-                <option value="" selected hidden disabled>Select company category</option>
-                <option value="fb">Food & Beverages</option>
-                <option value="cc">Clothing & Apparel</option>
+                <option value="" disabled selected hidden>Select company category</option>
+                <option
+                  v-for="category in categoryStore.categories"
+                  :key="category.id"
+                  :value="category.id"
+                >
+                  {{ category.name }}
+                </option>
               </select>
             </div>
           </div>
-          <RouterLink :to="{ name: 'add-product' }" class="btn-primary mt-[30px]">
-            Continue Create Account
-          </RouterLink>
+          <button type="submit" class="btn-primary mt-[30px]">Continue Create Account</button>
         </form>
       </div>
     </div>
