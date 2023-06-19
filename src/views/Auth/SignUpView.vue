@@ -36,7 +36,7 @@ const register = async (): Promise<void> => {
     await userStore.fetchUser()
 
     // redirect to add product page
-    router.push({ name: 'products-add' })
+    router.push({ name: 'add-product' })
   } catch (error) {
     console.log(error)
   }
