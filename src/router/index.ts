@@ -10,6 +10,8 @@ import TransactionView from '@/views/Dashboard/Transaction/TransactionView.vue'
 import TransactionAddView from '@/views/Dashboard/Transaction/TransactionAddView.vue'
 import TransactionDetailView from '@/views/Dashboard/Transaction/TransactionDetailView.vue'
 import TransactionQRViewVue from '@/views/Dashboard/Transaction/TransactionQRView.vue'
+import SignInView from '@/views/Auth/SignInView.vue'
+import AddProductPhotoView from '@/views/Auth/AddProductPhotoView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -25,9 +27,19 @@ const router = createRouter({
       component: SignUpView
     },
     {
+      path: '/signin',
+      name: 'signin',
+      component: SignInView
+    },
+    {
       path: '/add-product',
       name: 'add-product',
       component: AddProductView
+    },
+    {
+      path: '/add-product-photo/:id',
+      name: 'add-product-photo',
+      component: AddProductPhotoView
     },
     {
       path: '/dashboard',
