@@ -1,6 +1,43 @@
 <script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import HomeNavbar from '@/components/Layout/HomeNavbar.vue'
 import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
+import { useCategoryStore } from '@/stores/category'
+import axios from 'axios'
+import { useRouter } from 'vue-router'
+import type Product from '@/types/product'
+
+const API_URL = import.meta.env.VITE_API_URL as string
+const categoryStore = useCategoryStore()
+const router = useRouter()
+
+onMounted(async () => {
+  categoryStore.fetchCategories()
+})
+
+const form = ref<Product>({
+  name: '',
+  sku: '',
+  quantity: 0,
+  price: 0,
+  category_id: null
+})
+
+const addProduct = async (): Promise<void> => {
+  try {
+    // send req to API to add product
+    const { data } = await axios.post(API_URL + '/product', form.value, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`
+      }
+    })
+
+    // if success, redirect to 'add-product-photo' page | products-add
+    router.push({ name: 'add-product-photo', params: { id: data.result.id } })
+  } catch (error) {
+    console.log(error)
+  }
+}
 </script>
 <template>
   <section class="relative pb-[50px] bg-dark min-h-screen">
@@ -11,6 +48,7 @@ import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
         <SignUpHeaderVue />
 
         <form
+          @submit.prevent="addProduct"
           action=""
           class="bg-white rounded-[30px] p-6 md:max-w-[435px] mx-auto w-full flex flex-col shadow-sm"
         >
@@ -23,6 +61,7 @@ import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
               <input
                 type="text"
                 name="name"
+                v-model="form.name"
                 placeholder="Write your product name"
                 class="px-5 py-4 text-base bg-transparent border-2 rounded-full outline-none border-borderLight focus:border-primary placeholder:text-placeholderText text-dark"
               />
@@ -33,6 +72,7 @@ import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
               <input
                 type="text"
                 name="product_sku"
+                v-model="form.sku"
                 placeholder="Write your product sku"
                 class="px-5 py-4 text-base font-medium bg-transparent border-2 rounded-full outline-none border-borderLight focus:border-primary placeholder:text-placeholderText text-dark placeholder:font-normal"
               />
@@ -43,6 +83,7 @@ import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
               <input
                 type="number"
                 name="quantity"
+                v-model="form.quantity"
                 placeholder="Write your product quantity"
                 class="px-5 py-4 text-base bg-transparent border-2 rounded-full outline-none border-borderLight focus:border-primary placeholder:text-placeholderText text-dark"
               />
@@ -53,6 +94,7 @@ import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
               <input
                 type="number"
                 name="price"
+                v-model="form.price"
                 placeholder="Insert your product price"
                 class="px-5 py-4 text-base bg-transparent border-2 rounded-full outline-none border-borderLight focus:border-primary placeholder:text-placeholderText text-dark"
               />
@@ -62,16 +104,22 @@ import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
               <label for="" class="text-base font-medium text-dark"> Category </label>
               <select
                 name="category"
-                class="bg-transparent px-5 py-4 text-base border-2 rounded-full outline-none appearance-none border-borderLight focus:border-primary placeholder:text-placeholderText bg-[url('/public/assets/svg/ic-chevron-down.svg')] bg-[calc(100%-20px)_center] bg-no-repeat"
+                v-model="form.category_id"
+                class="bg-transparent px-5 py-4 text-base border-2 rounded-full outline-none appearance-none border-borderLight focus:border-primary placeholder:text-placeholderText bg-[url('/public/assets/svg/ic-chevron-down.svg')] bg-[calc(100%-20px)_center] bg-no-repeat invalid:required:text-placeholderText"
                 required
               >
-                <option value="" hidden disabled selected>Select product category</option>
-                <option value="fb">Food & Beverages</option>
-                <option value="cc">Clothing & Apparel</option>
+                <option value="" disabled selected hidden>Select company category</option>
+                <option
+                  v-for="category in categoryStore.categories"
+                  :key="category.id"
+                  :value="category.id"
+                >
+                  {{ category.name }}
+                </option>
               </select>
             </div>
           </div>
-          <a href="add-product-photo.html" class="btn-primary mt-[30px]"> Save Product </a>
+          <button type="submit" class="btn-primary mt-[30px]">Save Product</button>
         </form>
       </div>
     </div>
