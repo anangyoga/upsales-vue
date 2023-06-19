@@ -9,6 +9,8 @@ import ProductAddViewVue from '@/views/Dashboard/Product/ProductAddView.vue'
 import TransactionView from '@/views/Dashboard/Transaction/TransactionView.vue'
 import TransactionAddView from '@/views/Dashboard/Transaction/TransactionAddView.vue'
 import TransactionDetailView from '@/views/Dashboard/Transaction/TransactionDetailView.vue'
+import TransactionQRViewVue from '@/views/Dashboard/Transaction/TransactionQRView.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -81,6 +83,11 @@ const router = createRouter({
           }
         }
       ]
+    },
+    {
+      path: '/dashboard/transactions/:id/pay',
+      name: 'dashboard-transaction-pay',
+      component: TransactionQRViewVue
     }
   ]
 })
