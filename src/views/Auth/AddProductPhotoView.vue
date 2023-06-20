@@ -1,10 +1,53 @@
 <script setup lang="ts">
 import HomeNavbar from '@/components/Layout/HomeNavbar.vue'
 import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
-import { ref } from 'vue'
+import type Product from '@/types/product'
+import { useCategoryStore } from '@/stores/category'
+import { useUserStore } from '@/stores/user'
+import axios from 'axios'
+import { useRouter, useRoute } from 'vue-router'
+import { ref, onMounted } from 'vue'
+
+const API_URL = import.meta.env.VITE_API_URL as string
+const categoryStore = useCategoryStore()
+const userStore = useUserStore()
+
+// perbedaan useRouter and useRoute
+// useRouter untuk mengarahkan ke mana
+// kalau Route itu untuk menunjuk route/lokasi sekarang ada di url apa
+const router = useRouter()
+const route = useRoute()
+
+// products
+const product = ref<Product>({
+  name: '',
+  sku: '',
+  quantity: 0,
+  price: 0,
+  category_id: null
+})
+
+// fetch product
+const fetchProduct = async (): Promise<void> => {
+  // fetch current product
+  const { data } = await axios.get(API_URL + '/product', {
+    params: { id: route.params.id },
+    headers: {
+      Authorization: `Bearer ${localStorage.getItem('access_token')}`
+    }
+  })
+  // assign product data to ref
+  product.value = data.result
+}
+
+onMounted(() => {
+  fetchProduct()
+})
+
+// photos
 const photos = ref<string[]>([])
 
-const uploadPhotos = (e: any) => {
+const selectPhotos = (e: any) => {
   let files = e.target.files
 
   if (photos.value.length + files.length > 7) {
@@ -36,8 +79,8 @@ const uploadPhotos = (e: any) => {
           <div class="flex items-center w-full gap-3">
             <img src="@/assets/svg/default-image.svg" class="w-[60px] h-[60px]" alt="" />
             <div class="text-dark">
-              <h3 class="text-base font-semibold">Air Jordan 2</h3>
-              <p class="mt-1 text-xs font-normal">Sneakers</p>
+              <h3 class="text-base font-semibold">{{ product.name }}</h3>
+              <p class="mt-1 text-xs font-normal">id: {{ product.category_id }}</p>
             </div>
           </div>
 
@@ -51,7 +94,7 @@ const uploadPhotos = (e: any) => {
               value=""
               accept="image/x-png,image/jpg,image/jpeg"
               ref="file"
-              @change="uploadPhotos($event)"
+              @change="selectPhotos($event)"
             />
             <button
               type="button"
