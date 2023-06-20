@@ -163,7 +163,15 @@ const uploadPhotos = async (): Promise<void> => {
             />
           </div>
 
-          <button type="submit" class="mt-auto btn-primary">Update Product</button>
+          <button
+            type="submit"
+            class="mt-auto btn-primary"
+            :disabled="isPhotoUploading"
+            :class="{ 'opacity-70': isPhotoUploading }"
+          >
+            <span v-if="!isPhotoUploading">Update Product</span>
+            <span v-else>Loading ...</span>
+          </button>
         </form>
       </div>
     </div>
