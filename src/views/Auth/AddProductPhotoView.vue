@@ -2,15 +2,11 @@
 import HomeNavbar from '@/components/Layout/HomeNavbar.vue'
 import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
 import type Product from '@/types/product'
-import { useCategoryStore } from '@/stores/category'
-import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 import { useRouter, useRoute } from 'vue-router'
 import { ref, onMounted } from 'vue'
 
 const API_URL = import.meta.env.VITE_API_URL as string
-const categoryStore = useCategoryStore()
-const userStore = useUserStore()
 
 // perbedaan useRouter and useRoute
 // useRouter untuk mengarahkan ke mana
@@ -46,6 +42,7 @@ onMounted(() => {
 
 // photos
 const photos = ref<string[]>([])
+const isPhotoUploading = ref<boolean>(false)
 
 const selectPhotos = (e: any) => {
   let files = e.target.files
@@ -59,6 +56,49 @@ const selectPhotos = (e: any) => {
     photos.value.push(URL.createObjectURL(files[i]))
   }
 }
+
+const uploadPhotos = async (): Promise<void> => {
+  // set isPhotoLoading to true
+  isPhotoUploading.value = true
+
+  try {
+    // create Promise.all for uploading photos
+    await Promise.all(
+      photos.value.map(async (photo) => {
+        // convert blo URL to blob file
+        const blob = await fetch(photo).then((res) => res.blob())
+
+        // create form data
+        const formData = new FormData()
+
+        // append photos to form data with product id
+        formData.append('product_id', route.params.id as string)
+        formData.append('photo', blob)
+
+        try {
+          // upload photo to API
+          await axios.post(API_URL + '/product/photo', formData, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('access_token')}`
+            }
+          })
+
+          alert('Photos uploaded successfully')
+        } catch (error) {
+          console.log(error)
+        }
+      })
+    )
+  } catch (error) {
+    console.error(error)
+  } finally {
+    // set isPhotoUploadint to false
+    isPhotoUploading.value = true
+
+    // redirect to dashboard
+    router.push({ name: 'dashboard' })
+  }
+}
 </script>
 
 <template>
@@ -70,6 +110,7 @@ const selectPhotos = (e: any) => {
         <SignUpHeaderVue />
 
         <form
+          @submit.prevent="uploadPhotos"
           action=""
           class="bg-white rounded-[30px] p-6 md:max-w-[435px] min-h-[550px] w-full mx-auto flex flex-col shadow-sm"
           id="formProduct"
@@ -92,7 +133,7 @@ const selectPhotos = (e: any) => {
               id="photo"
               class="hidden"
               value=""
-              accept="image/x-png,image/jpg,image/jpeg"
+              accept="image/x-png,image/jpg,image/jpeg,image/webp"
               ref="file"
               @change="selectPhotos($event)"
             />
@@ -122,7 +163,7 @@ const selectPhotos = (e: any) => {
             />
           </div>
 
-          <a href="@/pages/dashboard/index.html" class="mt-auto btn-primary"> Update Product </a>
+          <button type="submit" class="mt-auto btn-primary">Update Product</button>
         </form>
       </div>
     </div>
