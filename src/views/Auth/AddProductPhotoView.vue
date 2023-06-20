@@ -80,7 +80,7 @@ const selectPhotos = (e: any) => {
             <img src="@/assets/svg/default-image.svg" class="w-[60px] h-[60px]" alt="" />
             <div class="text-dark">
               <h3 class="text-base font-semibold">{{ product.name }}</h3>
-              <p class="mt-1 text-xs font-normal">id: {{ product.category_id }}</p>
+              <p class="mt-1 text-xs font-normal">{{ product.category?.name }}</p>
             </div>
           </div>
 
