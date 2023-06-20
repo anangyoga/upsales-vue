@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import HomeNavbar from '@/components/Layout/HomeNavbar.vue'
 import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
 import { useCategoryStore } from '@/stores/category'
+import { useUserStore } from '@/stores/user'
 import axios from 'axios'
 import { useRouter } from 'vue-router'
 import type Product from '@/types/product'
@@ -10,8 +11,13 @@ import type Product from '@/types/product'
 const API_URL = import.meta.env.VITE_API_URL as string
 const categoryStore = useCategoryStore()
 const router = useRouter()
+const userStore = useUserStore()
 
 onMounted(async () => {
+  // if user not logged in, redirect to login page
+  if (!userStore.isLoggedIn) router.push({ name: 'signin' })
+
+  // fetch categories from API
   categoryStore.fetchCategories()
 })
 
