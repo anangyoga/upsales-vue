@@ -21,7 +21,7 @@ const fetchProduct = async (): Promise<void> => {
       },
       params: {
         page: pagination.value.current_page,
-        limit: 2
+        limit: 1
       }
     })
 
@@ -52,6 +52,24 @@ const changePage = (page: number): void => {
   // after that, fetch product
   fetchProduct()
 }
+
+// DELETE
+const deleteProduct = async (product_id: number): Promise<void> => {
+  const isConfirmed = confirm('Are you sure to delete this product?')
+  if (!isConfirmed) return
+
+  try {
+    const { data } = await axios.delete(API_URL + '/product/' + product_id, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`
+      }
+    })
+    alert(data.meta.message)
+    fetchProduct()
+  } catch (error) {
+    console.log(error)
+  }
+}
 </script>
 
 <template>
@@ -70,7 +88,12 @@ const changePage = (page: number): void => {
         <th class="">Actions</th>
       </thead>
       <tbody>
-        <ProductItem v-for="product in products" :key="product.id" :product="product" />
+        <ProductItem
+          v-for="product in products"
+          :key="product.id"
+          :product="product"
+          @delete-product="(product_id) => deleteProduct(product_id)"
+        />
       </tbody>
     </table>
   </div>
