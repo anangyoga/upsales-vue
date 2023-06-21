@@ -1,5 +1,32 @@
 <script setup lang="ts">
 import ProductItem from './ProductItem.vue'
+import { ref, onMounted } from 'vue'
+import type Product from '@/types/product'
+import axios from 'axios'
+
+const API_URL = import.meta.env.VITE_API_URL as string
+
+// PRODUCTS
+onMounted(() => fetchProduct())
+
+// kita pake [] karena mau ngecek OBJECT di dalam array
+const products = ref<Product[]>([])
+
+const fetchProduct = async (): Promise<void> => {
+  try {
+    // send req to API to GET product
+    const { data } = await axios.get(API_URL + '/product', {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('access_token')}`
+      }
+    })
+
+    //  assign value to products
+    products.value = data.result.data
+  } catch (error) {
+    console.log(error)
+  }
+}
 </script>
 
 <template>
@@ -18,7 +45,7 @@ import ProductItem from './ProductItem.vue'
         <th class="">Actions</th>
       </thead>
       <tbody>
-        <ProductItem />
+        <ProductItem v-for="product in products" :key="product.id" :product="product" />
       </tbody>
     </table>
   </div>

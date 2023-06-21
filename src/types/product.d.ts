@@ -6,6 +6,7 @@ declare interface Product {
   sku: string
   quantity: number
   price: number
+  status?: string
   category_id: number | null
   category?: Category
 }

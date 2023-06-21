@@ -1,3 +1,11 @@
+<script setup lang="ts">
+import type Product from '@/types/product'
+
+const props = defineProps<{
+  product: Product
+}>()
+</script>
+
 <template>
   <!-- Item -->
   <tr>
@@ -8,13 +16,13 @@
         alt=""
       />
       <div class="text-dark">
-        <h3 class="text-base font-semibold">Air Jordan 2</h3>
-        <p class="mt-1 text-xs font-normal">Sneakers</p>
+        <h3 class="text-base font-semibold">{{ props.product.name }}</h3>
+        <p class="mt-1 text-xs font-normal">{{ props.product.category?.name }}</p>
       </div>
     </td>
-    <td class="text-sm font-medium text-dark">Active</td>
-    <td class="text-sm font-medium text-dark">$18,000</td>
-    <td class="text-sm font-medium text-dark">90,230 qty</td>
+    <td class="text-sm font-medium text-dark">{{ props.product.status }}</td>
+    <td class="text-sm font-medium text-dark">{{ props.product.price }}</td>
+    <td class="text-sm font-medium text-dark">{{ props.product.quantity }}</td>
     <td>
       <div class="flex items-center gap-3">
         <!-- Edit -->
