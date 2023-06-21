@@ -12,6 +12,10 @@ import TransactionDetailView from '@/views/Dashboard/Transaction/TransactionDeta
 import TransactionQRViewVue from '@/views/Dashboard/Transaction/TransactionQRView.vue'
 import SignInView from '@/views/Auth/SignInView.vue'
 import AddProductPhotoView from '@/views/Auth/AddProductPhotoView.vue'
+import type { NavigationGuard } from 'vue-router'
+
+const navigationGuard: NavigationGuard = (to, from, next) =>
+  localStorage.getItem('access_token') ? next() : next({ name: 'signin' })
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,16 +38,24 @@ const router = createRouter({
     {
       path: '/add-product',
       name: 'add-product',
-      component: AddProductView
+      component: AddProductView,
+      // you can declare it like this, raw function
+      beforeEnter: (to, from, next) => {
+        localStorage.getItem('access_token') ? next() : next({ name: 'signin' })
+      }
     },
     {
       path: '/add-product-photo/:id',
       name: 'add-product-photo',
-      component: AddProductPhotoView
+      component: AddProductPhotoView,
+      // you can display it inside array, so you can insert multiple function
+      beforeEnter: [navigationGuard]
     },
     {
       path: '/dashboard',
       component: DashboardLayout,
+      // or just like this
+      beforeEnter: navigationGuard,
       children: [
         {
           path: '',
