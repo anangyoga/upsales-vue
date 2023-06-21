@@ -14,6 +14,9 @@ const categoryStore = useCategoryStore()
 const router = useRouter()
 
 onMounted(async () => {
+  // if user has token/logged in, push to dashboard
+  if (userStore.isLoggedIn) router.push({ name: 'dashboard' })
+
   categoryStore.fetchCategories()
 })
 

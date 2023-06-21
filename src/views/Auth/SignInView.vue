@@ -4,17 +4,16 @@ import SignUpHeaderVue from '@/components/Layout/SignUpHeader.vue'
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useUserStore } from '@/stores/user'
-import { useCategoryStore } from '@/stores/category'
 import type SignIn from '@/types/signin'
 import { useRouter } from 'vue-router'
 
 const API_URL = import.meta.env.VITE_API_URL as string
 const userStore = useUserStore()
-const categoryStore = useCategoryStore()
 const router = useRouter()
 
 onMounted(async () => {
-  categoryStore.fetchCategories()
+  // if user has token/logged in, push to dashboard
+  if (userStore.isLoggedIn) router.push({ name: 'dashboard' })
 })
 
 const form = ref<SignIn>({

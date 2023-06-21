@@ -24,7 +24,7 @@
           <a href="#" class="nav-link"> About </a>
         </div>
         <div class="flex flex-col lg:items-center lg:flex-row gap-x-5 gap-y-4">
-          <a href="#" class="btn-white"> My Account </a>
+          <RouterLink :to="{ name: 'signin' }" class="btn-white"> My Account </RouterLink>
         </div>
       </div>
     </div>
