@@ -18,14 +18,39 @@ const fetchProduct = async (): Promise<void> => {
     const { data } = await axios.get(API_URL + '/product', {
       headers: {
         Authorization: `Bearer ${localStorage.getItem('access_token')}`
+      },
+      params: {
+        page: pagination.value.current_page,
+        limit: 2
       }
     })
 
     //  assign value to products
     products.value = data.result.data
+
+    // get pagination data
+    pagination.value = {
+      current_page: data.result.current_page,
+      last_page: data.result.last_page
+    }
   } catch (error) {
     console.log(error)
   }
+}
+
+// PAGINATION
+// pay attention to CurrentPage & LastPage. CurrentPage buat tau kita di page berapa. LastPage buat nge-loop berapa page dan ditampilkan di UI
+const pagination = ref({
+  current_page: 1,
+  last_page: 1
+})
+
+const changePage = (page: number): void => {
+  // set the current_page dgn data yang diklik sesuai argument page pada button
+  pagination.value.current_page = page
+
+  // after that, fetch product
+  fetchProduct()
 }
 </script>
 
@@ -54,47 +79,14 @@ const fetchProduct = async (): Promise<void> => {
     id="paginationLinks"
     class="mt-auto flex flex-nowrap overflow-x-auto items-center gap-[10px] w-max"
   >
-    <a
-      href="#"
-      class="dashboard-link bg-white !p-[13px] min-w-max w-[46px] h-[46px] text-center font-bold leading-[21px] block is-active"
-    >
-      1
-    </a>
-    <a
-      href="#"
+    <button
+      @click="changePage(page)"
+      v-for="page in pagination.last_page"
+      :key="page"
+      :class="{ 'is-active': page === pagination.current_page }"
       class="dashboard-link bg-white !p-[13px] min-w-max w-[46px] h-[46px] text-center font-bold leading-[21px] block"
     >
-      2
-    </a>
-    <a
-      href="#"
-      class="dashboard-link !p-[13px] min-w-max w-[46px] h-[46px] text-[16px] block text-center font-bold"
-    >
-      3
-    </a>
-    <a
-      href="#"
-      class="dashboard-link bg-white !p-[13px] min-w-max w-[46px] h-[46px] text-center font-bold leading-[21px] block"
-    >
-      4
-    </a>
-    <a
-      href="#"
-      class="dashboard-link bg-white !p-[13px] min-w-max w-[46px] h-[46px] text-center font-bold leading-[21px] block"
-    >
-      5
-    </a>
-    <a
-      href="#"
-      class="dashboard-link bg-white !p-[13px] min-w-max w-[46px] h-[46px] text-center font-bold leading-[21px] block"
-    >
-      6
-    </a>
-    <a
-      href="#"
-      class="dashboard-link bg-white !p-[13px] min-w-max w-[46px] h-[46px] text-center font-bold leading-[21px] block"
-    >
-      7
-    </a>
+      {{ page }}
+    </button>
   </div>
 </template>
